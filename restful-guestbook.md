@@ -287,3 +287,55 @@ is nothing yet in the database.
 To prove that the app is working, the last piece is to configure
 the database and then add some content. Happily, there is a quick
 way to do this for testing purposes.
+
+## Testing the App
+
+Remember that the app currently uses an H2 in-memory database,
+so the first stage is to have the database created when the app
+starts. In the `resources` folder is a file called
+`application.properties` where the database settings should be added.
+The settings are:
+
+    spring.datasource.url=jdbc:h2:mem:guestbook
+    spring.datasource.username=sa
+    spring.datasource.password=
+    spring.datasource.driver-class-name=org.h2.Driver
+
+Two further settings will allow the database to be investigated from
+a web browser:
+
+    spring.h2.console.enabled=true
+    spring.h2.console.path=/h2
+
+The H2 console is now available (when the app is running) at
+`http://localhost:8080/h2`.
+
+Of course, since the database is all in memory, anything added to the
+Guestbook is lost when the app exits. This is fine for development
+(and we could swap to a MySQL database later), but in order to see
+if things are working we need to add some data. There is a quick and
+easy way to do this, by creating an SQL script.
+
+Still in the `resources` folder, create an SQL script called
+`data.sql` in there that will create some sample data (the location
+and the file name are important). For H2, the SQL is, for example:
+
+    INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Great Comment', 'john');
+    INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Me Too!', 'jane');
+    INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('I agree.', 'alice');
+
+Here `GUEST_BOOK_ENTRY` is the table name that has been generated
+automatically from the name of the class in the model. Likewise, the
+database column names have been generated from the attribute names.
+Both of these automatic generations can be overridden, but they will
+do for now. In any case, this is the pretty much the only place where
+the actual names of the table and columns will be needed.
+
+Using `curl` to access the database should now result in a
+promising JSON string containing the three Guestbook entries:
+
+    $ curl localhost:8080
+    [{"id":1,"user":"John Doe","comment":"Great Comment"},{"id":2,"user":"Jane Smith","comment":"Me Too!"},{"id":3,"user":"Alice Jones","comment":"I agree."}]⏎
+
+We have an app!
+

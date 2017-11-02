@@ -120,7 +120,8 @@ First, annotate the class as a `RestController`:
 Note that if all is working as it should, IntelliJ will automatically
 find the correct `import` for the `@RestController` annotation.
 
-Then we need to add a method that will handle a `GET` HTTP request to the root of the app. For the moment it can just return a String:
+Then we need to add a method that will handle a `GET` HTTP request
+to the root of the app. For the moment it can just return a String:
 
     @GetMapping ("/")
     public String testMapping () {
@@ -255,3 +256,34 @@ will be  created automatically when the app is started.
 
 If everything compiles and looks OK, the final stage is to make
 the controller call the service.
+
+
+### Linking Controller and Service
+
+There are two things to do to finsih off the first version of the app.
+Firstly, the controller class now requires an instance of the service
+class. This is dependency injection again, so we simply add an `@Autowired`
+declaration to the controller class:
+
+     @Autowired
+     private GuestBookService guestBookService;
+
+Then the current method can just be tweaked to call the method from the
+service layer:
+
+      @GetMapping ("/")
+      public List <GuestBookEntry> testMapping () {
+          return guestBookService.findAllEntries ();
+      }
+
+The app should now run, and `curl` can be used to access the route
+defined. The result is an empty JSON string, because obviously there
+is nothing yet in the database.
+
+    $ mvn spring-boot:run
+    $ curl localhost:8080
+    []⏎
+
+To prove that the app is working, the last piece is to configure
+the database and then add some content. Happily, there is a quick
+way to do this for testing purposes.

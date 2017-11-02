@@ -80,5 +80,61 @@ After a collection of messages, the app should be running on post
 8080, so pointing a web browser at `localhost:8080` should reveal a
 generic error message ("White Label") page.
 
-##
+## Building the API
 
+Our app will handle incoming requests (via HTTP) and will send back a
+suitable (hopefully useful) response. We will use the `curl` program to
+interact with the API from the command line. To check that `curl` is
+installed, we can attempt to access the still-running app:
+
+    $ curl localhost:8080
+
+The response should be an error message (a 404 error code) in JSON
+format, reporting that there is nothing found at the root page of
+the app. It will look something like:
+
+    {"timestamp":1509633964615,"status":404,"error":"Not Found","message":"No message available","path":"/"}⏎
+
+### Adding a Route
+
+A *route* can be thought of as some code that is executed when an
+HTTP request is received at a particular URL.
+
+The component of tha app that will manage routes is the
+*Controller*. It is usual (but not compulsory) to store different
+types of app component in different folders, so the first stage is
+to create a folder called `controller` in the main source code
+folder (`guestbook`) (IntelliJ calls this a "package". In that
+folder, create a new class (right-click the folder, then New)
+called `GuestBookController`. IntelliJ will fill in some skeleton code, and
+not much more is needed to get a working controller.
+
+First, annotate the class as a `RestController`:
+
+     @RestController
+     public class GuestBookController {
+     .
+     .
+     }
+
+Note that if all is working as it should, IntelliJ will automatically
+find the correct `import` for the `@RestController` annotation.
+
+Then we need to add a method that will handle a `GET` HTTP request to the root of the app. For the moment it can just return a String:
+
+    @GetMapping ("/")
+    public String testMapping () {
+        return "Hello, World";
+    }
+
+Restarting the app, and using `curl` to retrieve the root URL should
+now result in this message being returned:
+
+    $ curl localhost:8080
+    Hello, World⏎
+
+This basic route checks that everything is setup correctly, but before
+it can do anything more interesting, a model is needed, along with
+a database of some sort.
+
+## Adding a Model

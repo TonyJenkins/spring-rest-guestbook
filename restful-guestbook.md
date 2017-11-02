@@ -33,5 +33,52 @@ generates, and open them up.
 With this basic structure in place, it makes sense to connect the
 IntelliJ project to a GitHub repository.
 
-## Linking to GitHub
+### Linking to GitHub
+
+Create a repository on GitHub. Note its URL (from the main repository
+page), and then in the terminal in IntelliJ (opened via ALT-F12):
+
+    $ git init
+    $ git remote add origin https://github.com/<Remainder of URL>.git
+    $ git pull origin master
+    $ git push
+
+and all the files in IntelliJ should now be in the remote repository.
+
+### Looking Around
+
+Taking a look at the structure that has now been created, we can
+see that there is a single Java source file in `src/main/java/com/<yourname>/guestbook`. This is the file that
+will kick off the complete Spring application. There is also a
+folder called `resources` which contains a file
+called `application.properties`, which as the name suggests is
+where various options are set.
+
+In the main folder is a file `pom.xml` which contains details of all
+the dependencies for the project. For example, looking inside it there
+should be an entry something like:
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+which is the dependency for an H2 database that was defined when the
+project was created.
+
+Maven will have been downloading these dependencies behind the scenes,
+so it should now be possible to start the app off. It won't do
+anything much as yet, but this will test that everything is set up
+correctly.
+
+The app can be started by the terminal command:
+
+    $ mvn spring-boot:run
+
+After a collection of messages, the app should be running on post
+8080, so pointing a web browser at `localhost:8080` should reveal a
+generic error message ("White Label") page.
+
+##
 

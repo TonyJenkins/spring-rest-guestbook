@@ -339,3 +339,42 @@ promising JSON string containing the three Guestbook entries:
 
 We have an app!
 
+## Tidying Up
+
+There are a few things to do now that will tidy the code and make
+things a little easier when adding more features to the app.
+
+First, the table name in the database is not very developer-friendly.
+Although we don't need it very often, we would probably prefer a name
+in lower case, something like `entries`. This is easily specified by
+changing the class definition for `GuestBookEntry` to specify the
+table name we would prefer:
+
+       @Entity
+       @Table (name = "entries")
+       public class GuestBookEntry {
+
+Nothing else *in the code* needs to be changed, and as the table name
+is currently hidden, the app will work exactly as before. The only
+change needed is to alter the table name in the SQL `INSERT`
+statements in the `data.sql` script.
+
+A similar change can be used to give the `id` a more friendly name:
+
+       @Id
+       @GeneratedValue (strategy = GenerationType.AUTO)
+       @Column (name = "entry_id")
+       private Integer id;
+
+Second, it is probably not the best idea to have the root of the
+app return a complete list of all the entries. This simple fix changes
+the route for a complete listing of the Guestbook. Change the only
+route in the controller to:
+
+       @GetMapping ("/comments")
+       public List <GuestBookEntry> getAllComments () {
+           return guestBookService.findAllEntries ();
+       }
+
+This code also changes the method name to something more useful,
+although the actual name of the method is in this case quite irrelevant.

@@ -1,3 +1,3 @@
-INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Great Comment', 'john');
-INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Me Too!', 'jane');
-INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('I agree.', 'alice');
+INSERT INTO entries (COMMENT, USER) VALUES ('Great Comment', 'john');
+INSERT INTO entries (COMMENT, USER) VALUES ('Me Too!', 'jane');
+INSERT INTO entries (COMMENT, USER) VALUES ('I agree.', 'alice');

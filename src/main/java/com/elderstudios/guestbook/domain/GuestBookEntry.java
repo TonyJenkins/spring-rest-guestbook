@@ -2,16 +2,15 @@ package com.elderstudios.guestbook.domain;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table (name = "entries")
 public class GuestBookEntry {
 
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
+    @Column (name = "entry_id")
     private Integer id;
 
     @NotEmpty

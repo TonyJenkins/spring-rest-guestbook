@@ -138,3 +138,84 @@ it can do anything more interesting, a model is needed, along with
 a database of some sort.
 
 ## Adding a Model
+
+This app will use a simple in-memory database using H2. This could be
+replaced by something like MySQL or MariaDB later on (and not very
+much effort would be needed to make the change).
+
+Before adding a model, we need to add a new dependency. Locate the POM
+(`pom.xml` in the main top folder of the app), and edit it to include
+the following along with all the current dependencies:
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+Maven should now start downloading the new dependency.
+
+To define the model, create a folder (package) called `domain`
+alongside the `controller` folder. This package will contain two
+classes: one will define the structure of the model
+(that is, what is to be stored), and the second will define
+methods that access the model (so, how the data once stored
+is manipulated).
+
+In `domain` create a class called `GuestBookEntry` to define the
+data to be stored. Each instance of this class will correspond
+to a stored record in the database. The class itself looks very
+much like a standard Java class. There are two Strings, one for
+the name of the user making the comment, and one for the comment
+itelf, along with a unique identifier (an integer) to serve as
+the primary key. The identifier will be maintained automatically,
+and both Strings must be provided. So the attributes in the class
+are defined as so:
+
+    @Id
+    @GeneratedValue (strategy = GenerationType.AUTO)
+    private Integer id;
+
+    @NotEmpty
+    private String user;
+
+    @NotEmpty
+    private String comment;
+
+The class itself, is annotated to show that it corresponds to an
+entity in the database:
+
+    @Entity
+    public class GuestBookEntry {
+
+The methods in the class can just be the usual constructors, getters,
+setters, and a `toString`, all of which IntelliJ will generate
+automatically.
+
+The second class in the `domain` folder will define how
+`GuestBookEntry` instances are retrieved from the database. There
+is not much to include in this class (which will actually be an
+interface) as Spring automatically provides most common query
+requirements. The code below (imports omitted) defines
+`GuestBookEntryRepository` as an interface that extends
+`CrudRepository` and creates a method that will return all the
+entries in the database as a standard Java `List`.
+
+    public interface GuestBookEntryRepository extends CrudRepository <GuestBookEntry, Integer> {
+
+        @Override
+        List <GuestBookEntry> findAll ();
+
+    }
+
+The details of how the records are stored and retrieved will all be
+handled by Spring.
+
+Of course, the app cannot yet retrieve anything from the database
+as there is nothing to connect the model and the controller. So we
+need to finish things off by adding in the layer in between. To check
+that the code to date compiles, the Maven command:
+
+    $ mvn compile
+
+will find all the source code, and compile.
+

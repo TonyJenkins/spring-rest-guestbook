@@ -137,7 +137,7 @@ This basic route checks that everything is setup correctly, but before
 it can do anything more interesting, a model is needed, along with
 a database of some sort.
 
-## Adding a Model
+### Adding a Model
 
 This app will use a simple in-memory database using H2. This could be
 replaced by something like MySQL or MariaDB later on (and not very
@@ -219,3 +219,39 @@ that the code to date compiles, the Maven command:
 
 will find all the source code, and compile.
 
+### The Service Layer
+
+The service layer can be thought of as sitting between the controller
+and the domain. The controller will access methods from the service
+layer, which in turn will call methods from the domain layer. The
+reason behind this is *abstraction* in that the controller does not
+need to know the details of the domain. Also, the service layer is
+where we can implement any business logic, keeping this separate from
+the domain, which can just concern itself with accessing the data
+store.
+
+To add the service layer, create a package called `service` alongside
+the existing `domain` and `controller` packages. In this new
+folder create a class called `GuestBookService` annotated with
+`@Service` that has a `GuestBookRepository` as its attribue, and
+that includes a single method that calls the `findAll`
+method from `GuestBookRepository`.
+
+    @Service
+    public class GuestBookService {
+
+        @Autowired
+        private GuestBookEntryRepository guestBookEntryRepository;
+
+        public List <GuestBookEntry> findAllEntries () {
+            return this.guestBookEntryRepository.findAll ();
+        }
+    }
+
+This new class is the first example of *dependency injection* we have
+used. The `@Autowired` annotation declares that an instance of
+GuestBookRepository` is required by the service layer; this instance
+will be  created automatically when the app is started.
+
+If everything compiles and looks OK, the final stage is to make
+the controller call the service.

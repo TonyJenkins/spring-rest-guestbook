@@ -27,6 +27,20 @@ public class GuestBookEntry {
         this.comment = comment;
     }
 
+    public GuestBookEntry (Integer id, String user, String comment) {
+        this.id = id;
+        this.user = user;
+        this.comment = comment;
+    }
+
+    public Integer getId () {
+        return id;
+    }
+
+    public void setId (Integer id) {
+        this.id = id;
+    }
+
     public String getUser () {
         return user;
     }

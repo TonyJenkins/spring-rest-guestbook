@@ -559,3 +559,28 @@ a suitable JSON payload should now add a new item to the guestbook:
 
     $ curl -H "Content-Type: application/json" -X POST -d '{"user":"john","comment":"A splendid comment!"}' http://localhost:8080/add
 
+## Update
+
+Finally, to complete CRUD we need a route to update an existing entry.
+The workflow is the same, and the same mechanism as used to add a
+comment (a JSON payload sent with an HTTP request) will work here too.
+To distinguish it from any other request we could either use a
+different route, or a different HTTP method (a `PUT`, for example) to
+access an existing route. In this code we'll use a route at `update`
+and a good old `POST`. So the new code in the controller is:
+
+    @PostMapping ("/update")
+    public void updateComment (@RequestBody GuestBookEntry guestBookEntry) {
+        guestBookService.save (guestBookEntry);
+    }
+
+This uses the same method in the servicelayer as the route to add a
+new entry, so nothing else needs to be done. The difference is that
+the `id` of a comment now needs to be supplied in the JSON:
+
+    $ curl -H "Content-Type: application/json" -X POST -d '{"id":1,"user":"john","comment":"A splendid comment!"}' http://localhost:8080/update
+
+If the `id` matches an existing comment, that comment's entry is
+changed. As written, if the `id` doesn't match, a new entry will be
+made. It seems most likely that this is what would be required but,
+if not, some logic could be added into the service layer.

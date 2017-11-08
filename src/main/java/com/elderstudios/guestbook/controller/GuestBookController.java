@@ -38,5 +38,10 @@ public class GuestBookController {
         guestBookService.save (guestBookEntry);
     }
 
+    @PostMapping ("/update")
+    public void updateComment (@RequestBody GuestBookEntry guestBookEntry) {
+        System.out.println (guestBookEntry);
+        guestBookService.save (guestBookEntry);
+    }
 
 }

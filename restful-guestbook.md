@@ -165,9 +165,9 @@ is manipulated).
 In `domain` create a class called `GuestBookEntry` to define the
 data to be stored. Each instance of this class will correspond
 to a stored record in the database. The class itself looks very
-much like a standard Java class. There are two Strings, one for
+much like any standard Java class. There are two Strings, one for
 the name of the user making the comment, and one for the comment
-itelf, along with a unique identifier (an integer) to serve as
+itself, along with a unique identifier (an integer) to serve as
 the primary key. The identifier will be maintained automatically,
 and both Strings must be provided. So the attributes in the class
 are defined as so:
@@ -189,7 +189,7 @@ entity in the database:
     public class GuestBookEntry {
 
 The methods in the class can just be the usual constructors, getters,
-setters, and a `toString`, all of which IntelliJ will generate
+setters, and a `toString`, all of which IntelliJ can generate
 automatically.
 
 The second class in the `domain` folder will define how

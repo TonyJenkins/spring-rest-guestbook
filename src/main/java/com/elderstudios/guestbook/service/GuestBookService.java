@@ -29,4 +29,8 @@ public class GuestBookService {
         return this.guestBookEntryRepository.findGuestBookEntryByUser (user);
     }
 
+    public void save (GuestBookEntry newEntry) {
+        this.guestBookEntryRepository.save (newEntry);
+    }
+
 }

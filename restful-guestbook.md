@@ -412,7 +412,7 @@ process the resulting `List`. This would work, but it is a lot of
 effort and breaks a golden rule - whenever possible, let the
 database do the work.
 
-### Retreiving an Entry bu ID
+### Retreiving an Entry by ID
 
 To retrieve a single entry by number, a URL such as
 `http://localhost:8080/comment/1` would be good, where `1` is the
@@ -527,3 +527,35 @@ via `curl`:
 
 If there is no comment with that `entry_id`, a 500 HTTP
 error ("Internal Server Error") will be returned.
+
+### Creation
+
+The workflow for adding a new route is now familiar, so we can
+quickly move on to add a route for adding a new entry to the
+guestbook. The content of the entry (a username and a comment) will be
+provided as JSON, and will be sent as the payload of an HTTP POST
+request. The code in the controller looks like this, with the route
+annotated as a `PostMapping`.
+
+    @PostMapping ("/add")
+    public void addComment (@RequestBody GuestBookEntry guestBookEntry) {
+        guestBookService.save (guestBookEntry);
+    }
+
+The second new annotation here (`@RequestBody`) calls for the JSON
+payload to be translated into a `GuestBookEntry` object. This object
+is then passed to the service layer to be saved. The service layer
+needs to do nothing with the object, so just passes it through to
+the repository:
+
+    public void save (GuestBookEntry newEntry) {
+        this.guestBookEntryRepository.save (newEntry);
+    }
+
+Like `delete`, `save` is already defined in the interface (and so the
+code needed to save the record will be genrated by Spring), so there
+is no new code needed in the repository. A `curl` POST request with
+a suitable JSON payload should now add a new item to the guestbook:
+
+    $ curl -H "Content-Type: application/json" -X POST -d '{"user":"john","comment":"A splendid comment!"}' http://localhost:8080/add
+

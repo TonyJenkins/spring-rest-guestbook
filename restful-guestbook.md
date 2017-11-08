@@ -458,3 +458,37 @@ So, now, the following should work, for example:
     $ curl localhost:8080/comment/1
     {"id":1,"user":"john","comment":"Great Comment"}⏎
 
+### Retrieving a User's Entries
+
+Adding code to retrieve all the posts by a particular user involves much
+the same workflow, just bearing in mind that there could be multiple
+results, so the methods will return `List` objects.
+
+This time we start by adding a route to the controller, and will then
+work down the layers. The URL for the new route will be
+`http://localhost:8080/user/<username>`, and the HTTP request
+will still be a `GET`. The controller method will call a method in
+the service layer:
+
+    @GetMapping ("/user/{user}")
+    public List <GuestBookEntry> findGuestBookEntryByUser (@PathVariable ("user") String user) {
+        return this.guestBookService.findGuestBookEntryByUser (user);
+    }
+
+The service layer method just passes the parameter along to the
+repository:
+
+    public List <GuestBookEntry> findGuestBookEntryByUser (String user) {
+        return this.guestBookEntryRepository.findGuestBookEntryByUser (user);
+    }
+
+And in the repository interface there is again just a method
+signature. The name of the method is *important* in the repository
+as it is parsed to form the required query.
+
+    List<GuestBookEntry> findGuestBookEntryByUser (String user);
+
+With this code in place, and with the app restarted, a `curl` command
+can now retrieve all the comments made by, for example, user "john":
+
+    $ curl localhost:8080/user/john

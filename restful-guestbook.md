@@ -492,3 +492,38 @@ With this code in place, and with the app restarted, a `curl` command
 can now retrieve all the comments made by, for example, user "john":
 
     $ curl localhost:8080/user/john
+
+## Deletion
+
+Now to add a route that will allow the deletion of an entry. The
+obvious key value is the `entry_id`. The obvious route to use is the
+same as one to retrieve the entry (`http://localhost:8080/comment/<id>`)
+but this time the HTTP request will be a `DELETE`. So there will be
+two mappings to the same URL, but they will be "listening" for
+different types of HTTP request. In the controller, the code is almost
+the same as for retrieval, as usual passing the request to the service
+layer. The main difference is that the annotation on the method marks
+a `DeleteMapping`.
+
+    @DeleteMapping ("/comment/{id}")
+    public void deleteGuestBookEntryById (@PathVariable ("id") Integer id) {
+        this.guestBookService.deleteGuestBookEntryById (id);
+    }
+
+The service layer, again as usual, passes this through to the
+repository in the domain layer:
+
+    public void deleteGuestBookEntryById (Integer id) {
+        this.guestBookEntryRepository.delete (id);
+    }
+
+The method name `delete` is important here. This is defined in the
+`CrudRepository` from which the app's repository inherits. And since
+there is nothing special to do here, there is no additional code needed
+in the app. Restarting, it should now be possible to delete an entry
+via `curl`:
+
+    $ curl -X "DELETE" localhost:8080/comment/8
+
+If there is no comment with that `entry_id`, a 500 HTTP
+error ("Internal Server Error") will be returned.

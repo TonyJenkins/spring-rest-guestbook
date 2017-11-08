@@ -378,3 +378,83 @@ route in the controller to:
 
 This code also changes the method name to something more useful,
 although the actual name of the method is in this case quite irrelevant.
+
+# Towards CRUD
+
+A database app usually needs to implement four operations on its data
+store:
+
+* **C**reate new data.
+* **R**rerieve existing data.
+* **U**date existing data.
+* **D**elete existing data.
+
+We will look at each of these in the following sections. These
+could be added in any order, but we will take them in (roughly)
+increasing order of complexity: retrieval, deletion, creation and
+updating.
+
+## Retrieval
+
+The app can already retrieve data from the database, so it makes
+sense to start here. At present it can retrieve all the entries in the
+guestbook; this will now be extended to two more precise queries:
+
+* Using the entry's unique ID number to retrieve the corresponding
+  entry (this will return exactly one entry, or possibly none at all
+  if the ID is not found).
+* Retrieving all comments by a certain user using the user name (this
+  could return any number of entries, including none at all).
+
+Both of these could be achieved by using the existing method to
+retrieve all the records, and then writing some Java code to
+process the resulting `List`. This would work, but it is a lot of
+effort and breaks a golden rule - whenever possible, let the
+database do the work.
+
+### Retreiving an Entry bu ID
+
+To retrieve a single entry by number, a URL such as
+`http://localhost:8080/comment/1` would be good, where `1` is the
+id of the entry in the database. The workflow to add this in is:
+
+1. Create a query method in the Repository class that finds an
+   entry by the ID.
+2. Create a method in the service layer that calls this method in
+   the Repository (and includes any relevant business logic).
+3. Add a route to the Controller that calls the method in the
+   service layer.
+
+(This workflow is the same, in fact, for adding any new feature.)
+
+So now, an HTTP GET request, sent via `curl`, will find the relevant
+record.
+
+For the first stage, add this method signature to the
+`GuestBookEntryRepository` interface:
+
+    GuestBookEntry findGuestBookEntryById (Integer id);
+
+That's it. The method name itself is sufficient to express the
+query required!
+
+There is no business logic to add, so in the service layer
+(class `GuestBookService`) the method just passes the results on:
+
+And in the Controller, the URL is mapped with some extra code to
+extract the required entry Id from the URL:
+
+    @GetMapping ("/comment/{id}")
+    public GuestBookEntry findGuestBookEntryById (@PathVariable ("id") Integer id) {
+        return this.guestBookService.findGuestBookEntryById (id);
+    }
+
+The extra code here extracts `id` from the URL (as described in the
+`@GetMapping`) and uses it as the parameter in the call to the
+method.
+
+So, now, the following should work, for example:
+
+    $ curl localhost:8080/comment/1
+    {"id":1,"user":"john","comment":"Great Comment"}⏎
+

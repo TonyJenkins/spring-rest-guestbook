@@ -523,7 +523,7 @@ there is nothing special to do here, there is no additional code needed
 in the app. Restarting, it should now be possible to delete an entry
 via `curl`:
 
-    $ curl -X "DELETE" localhost:8080/comment/8
+    $ curl -X DELETE localhost:8080/comment/8
 
 If there is no comment with that `entry_id`, a 500 HTTP
 error ("Internal Server Error") will be returned.
@@ -584,3 +584,49 @@ If the `id` matches an existing comment, that comment's entry is
 changed. As written, if the `id` doesn't match, a new entry will be
 made. It seems most likely that this is what would be required but,
 if not, some logic could be added into the service layer.
+
+# Persistence
+
+Now that the app seems to be working, it would be a good idea to
+add a persistent store. The current H2 database is fine for testing
+and development, but all the contents are lost once the app closes. So
+our final step is to replace H2 with a MySQL database.
+
+First, make sure MySQL is installed, and create a database
+(`guestbook` would be a good name) and a user with access to
+it. The MySQL commands (as "root") are:
+
+    mysql> create database guestbook;
+    mysql> create user 'guestbook_user' identified by 'guestbook_password';
+    mysql> grant all on guestbook.* to guestbook_user;
+
+For the app to use MySQL, Maven needs to be aware of the dependency,
+so this is included in `pom.xml`:
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.42</version>
+        </dependency>
+
+At the same time, the dependency for H2 can be removed (or just
+commented-out).
+
+The second piece of configuration is to provide the connection
+details for the database in `application.properties`. First remove
+(or comment-out) the H2 settings, and then add:
+
+    database.name=guestbook
+    database.ip=127.0.0.1
+
+    spring.datasource.username=guestbook_user
+    spring.datasource.password=guestbook_password
+    spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+    spring.datasource.url=jdbc:mysql://${database.ip}:3306/${database.name}
+
+    spring.jpa.hibernate.ddl-auto=create
+
+The only remaining step is to remove (or rename) the `data.sql` file
+that was used to seed the database. After this, the next time the app
+is run, a table will be created in the MySQL database, and entries
+will persist from one run to the next.

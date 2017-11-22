@@ -1,19 +1,25 @@
-# A Spring RESFTful Guestbook
+# A Spring RESTful Guestbook
+
+This tutorial guides you through building a small application using
+Spring Boot. The application is a simple guestbook, consisting of
+a collection of comments, and the names of the users who made them.
+It provides a simple API that can be accessed via HTTP; this
+tutorial uses the command-line program `curl` to send these requests.
 
 ## Pre-requisites
 
-Using this guide requires a Linux platform with the following toold
+Using this guide requires a Linux platform with the following tools
 installed:
 
 * Java 1.8 JDK
-* *Git* for revision control.
+* *Git* (optionally) for revision control.
 * *Maven* for build automation and to manage dependencies.
 * *Curl* for passing requests over HTTP.
 
 JetBrains IntelliJ IDEA Ultimate Edition is also assumed.
 
-GitHub (https://www.github.com/) is used for version control, but this
-is optional, and any other Git service would do.
+GitHub (https://www.github.com/) is recommended for version control,
+but this is optional, and any other Git service would do.
 
 ## Getting Started
 
@@ -27,21 +33,29 @@ project type. On the next screen pick `com.<yourname>` as the Group,
 `guestbook` as the Artifact; leave the other fields or allow them to
 change automatically. Finally, on the next screen, pick the Web
 dependency (under `Web`), and the H2 database (under `SQL`). IntelliJ
-will now send the date to the Spring Initializr, download the files it
-generates, and open them up.
+will now send the choices to the Spring Initializr, download the files
+it generates, and open them up.
+
+As well as downloading the files, the process of downloading the
+chosen project dependencies will also start (there should be a message
+from IntelliJ that this has started). It is best to let this complete
+before carrying on!
 
 With this basic structure in place, it makes sense to connect the
 IntelliJ project to a GitHub repository.
 
 ### Linking to GitHub
 
-Create a repository on GitHub. Note its URL (from the main repository
-page), and then in the terminal in IntelliJ (opened via ALT-F12):
+This is now the time to (optionally) link the project to a remote
+repository. Create a repository on GitHub. Note its URL (from the
+main repository page), and then in the terminal in IntelliJ (opened
+via ALT-F12):
 
     $ git init
     $ git remote add origin https://github.com/<Remainder of URL>.git
-    $ git pull origin master
-    $ git push
+    $ git add .
+    $ git commit -a -m "Initial Commit"
+    $ git push -u origin master
 
 and all the files in IntelliJ should now be in the remote repository.
 
@@ -105,7 +119,7 @@ The component of tha app that will manage routes is the
 types of app component in different folders, so the first stage is
 to create a folder called `controller` in the main source code
 folder (`guestbook`) (IntelliJ calls this a "package". In that
-folder, create a new class (right-click the folder, then New)
+folder, create a new Java Class (right-click the folder, then `New`)
 called `GuestBookController`. IntelliJ will fill in some skeleton code, and
 not much more is needed to get a working controller.
 
@@ -118,7 +132,8 @@ First, annotate the class as a `RestController`:
      }
 
 Note that if all is working as it should, IntelliJ will automatically
-find the correct `import` for the `@RestController` annotation.
+find and include the correct `import` for the `@RestController`
+annotation.
 
 Then we need to add a method that will handle a `GET` HTTP request
 to the root of the app. For the moment it can just return a String:
@@ -136,7 +151,7 @@ now result in this message being returned:
 
 This basic route checks that everything is setup correctly, but before
 it can do anything more interesting, a model is needed, along with
-a database of some sort.
+a data store of some sort.
 
 ### Adding a Model
 
@@ -144,9 +159,9 @@ This app will use a simple in-memory database using H2. This could be
 replaced by something like MySQL or MariaDB later on (and not very
 much effort would be needed to make the change).
 
-Before adding a model, we need to add a new dependency. Locate the POM
-(`pom.xml` in the main top folder of the app), and edit it to include
-the following along with all the current dependencies:
+Before adding a model, we need to add a new dependency, JPA. Locate the
+POM (`pom.xml` in the main top folder of the app), and edit it to
+include the following along with all the current dependencies:
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -188,7 +203,8 @@ entity in the database:
     @Entity
     public class GuestBookEntry {
 
-The methods in the class can just be the usual constructors, getters,
+The methods in the class can just be the usual constructors (there
+must be a default constructor with no arguments), getters,
 setters, and a `toString`, all of which IntelliJ can generate
 automatically.
 
@@ -213,8 +229,10 @@ handled by Spring.
 
 Of course, the app cannot yet retrieve anything from the database
 as there is nothing to connect the model and the controller. So we
-need to finish things off by adding in the layer in between. To check
-that the code to date compiles, the Maven command:
+need to finish things off by adding in the layer in between.
+
+But this is still a good time to check
+that the code to date compiles; the Maven command:
 
     $ mvn compile
 
@@ -249,10 +267,11 @@ method from `GuestBookRepository`.
         }
     }
 
-This new class is the first example of *dependency injection* we have
+This new class includes the first example of *dependency injection*
+we have
 used. The `@Autowired` annotation declares that an instance of
 GuestBookRepository` is required by the service layer; this instance
-will be  created automatically when the app is started.
+will be created automatically when the app is started.
 
 If everything compiles and looks OK, the final stage is to make
 the controller call the service.
@@ -260,7 +279,7 @@ the controller call the service.
 
 ### Linking Controller and Service
 
-There are two things to do to finsih off the first version of the app.
+There are two things to do to finish off the first version of the app.
 Firstly, the controller class now requires an instance of the service
 class. This is dependency injection again, so we simply add an `@Autowired`
 declaration to the controller class:
@@ -323,6 +342,7 @@ and the file name are important). For H2, the SQL is, for example:
     INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Great Comment', 'john');
     INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Me Too!', 'jane');
     INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('I agree.', 'alice');
+    INSERT INTO GUEST_BOOK_ENTRY (COMMENT, USER) VALUES ('Of course!', 'john');
 
 Here `GUEST_BOOK_ENTRY` is the table name that has been generated
 automatically from the name of the class in the model. Likewise, the
@@ -331,11 +351,11 @@ Both of these automatic generations can be overridden, but they will
 do for now. In any case, this is the pretty much the only place where
 the actual names of the table and columns will be needed.
 
-Using `curl` to access the database should now result in a
-promising JSON string containing the three Guestbook entries:
+Restart the app, and using `curl` to access the database should now result in a
+promising JSON string containing the four Guestbook entries:
 
     $ curl localhost:8080
-    [{"id":1,"user":"John Doe","comment":"Great Comment"},{"id":2,"user":"Jane Smith","comment":"Me Too!"},{"id":3,"user":"Alice Jones","comment":"I agree."}]⏎
+    [{"id":1,"user":"john","comment":"Great Comment"},{"id":2,"user":"jane","comment":"Me Too!"},{"id":3,"user":"alice","comment":"I agree."},{"id":4,"user":"john","comment":"Of course!"}]
 
 We have an app!
 
@@ -404,7 +424,7 @@ guestbook; this will now be extended to two more precise queries:
   entry (this will return exactly one entry, or possibly none at all
   if the ID is not found).
 * Retrieving all comments by a certain user using the user name (this
-  could return any number of entries, including none at all).
+  could return any number of entries, again including none at all).
 
 Both of these could be achieved by using the existing method to
 retrieve all the records, and then writing some Java code to
@@ -439,7 +459,11 @@ That's it. The method name itself is sufficient to express the
 query required!
 
 There is no business logic to add, so in the service layer
-(class `GuestBookService`) the method just passes the results on:
+(class `GuestBookService`) the method just passes the result on:
+
+    public GuestBookEntry findGuestBookEntryById (Integer id) {
+        return this.guestBookEntryRepository.findGuestBookEntriesById(id);
+    }
 
 And in the Controller, the URL is mapped with some extra code to
 extract the required entry Id from the URL:
@@ -492,6 +516,7 @@ With this code in place, and with the app restarted, a `curl` command
 can now retrieve all the comments made by, for example, user "john":
 
     $ curl localhost:8080/user/john
+    [{"id":1,"user":"john","comment":"Great Comment"},{"id":4,"user":"john","comment":"Of course!"}]
 
 ## Deletion
 
@@ -499,7 +524,7 @@ Now to add a route that will allow the deletion of an entry. The
 obvious key value is the `entry_id`. The obvious route to use is the
 same as one to retrieve the entry (`http://localhost:8080/comment/<id>`)
 but this time the HTTP request will be a `DELETE`. So there will be
-two mappings to the same URL, but they will be "listening" for
+two mappings to the same URL (route), but they will be "listening" for
 different types of HTTP request. In the controller, the code is almost
 the same as for retrieval, as usual passing the request to the service
 layer. The main difference is that the annotation on the method marks
@@ -520,7 +545,9 @@ repository in the domain layer:
 The method name `delete` is important here. This is defined in the
 `CrudRepository` from which the app's repository inherits. And since
 there is nothing special to do here, there is no additional code needed
-in the app. Restarting, it should now be possible to delete an entry
+in the app. The domain layer stays unchanged.
+
+Restarting, it should now be possible to delete an entry
 via `curl`:
 
     $ curl -X DELETE localhost:8080/comment/8
@@ -539,7 +566,7 @@ annotated as a `PostMapping`.
 
     @PostMapping ("/add")
     public void addComment (@RequestBody GuestBookEntry guestBookEntry) {
-        guestBookService.save (guestBookEntry);
+        this.guestBookService.save (guestBookEntry);
     }
 
 The second new annotation here (`@RequestBody`) calls for the JSON
@@ -571,10 +598,10 @@ and a good old `POST`. So the new code in the controller is:
 
     @PostMapping ("/update")
     public void updateComment (@RequestBody GuestBookEntry guestBookEntry) {
-        guestBookService.save (guestBookEntry);
+        this.guestBookService.save (guestBookEntry);
     }
 
-This uses the same method in the servicelayer as the route to add a
+This uses the same method in the service layer as the route to add a
 new entry, so nothing else needs to be done. The difference is that
 the `id` of a comment now needs to be supplied in the JSON:
 
@@ -582,8 +609,9 @@ the `id` of a comment now needs to be supplied in the JSON:
 
 If the `id` matches an existing comment, that comment's entry is
 changed. As written, if the `id` doesn't match, a new entry will be
-made. It seems most likely that this is what would be required but,
-if not, some logic could be added into the service layer.
+made (with the next generated id). It seems most likely that this
+is what would be required but, if not, some logic could be added
+into the service layer.
 
 # Persistence
 

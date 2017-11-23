@@ -658,3 +658,10 @@ The only remaining step is to remove (or rename) the `data.sql` file
 that was used to seed the database. After this, the next time the app
 is run, a table will be created in the MySQL database, and entries
 will persist from one run to the next.
+
+Before re-running the app, it's a good idea to use Maven to clean
+up any compilation files (these can include an archived `data.sql`):
+
+    $ mvn clean
+
+Before running the app as before, in its new persistent version.

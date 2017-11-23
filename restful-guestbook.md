@@ -90,7 +90,7 @@ The app can be started by the terminal command:
 
     $ mvn spring-boot:run
 
-After a collection of messages, the app should be running on post
+After a collection of messages, the app should be running on port
 8080, so pointing a web browser at `localhost:8080` should reveal a
 generic error message ("White Label") page.
 
@@ -114,11 +114,11 @@ the app. It will look something like:
 A *route* can be thought of as some code that is executed when an
 HTTP request is received at a particular URL.
 
-The component of tha app that will manage routes is the
+The component of the app that will manage routes is the
 *Controller*. It is usual (but not compulsory) to store different
 types of app component in different folders, so the first stage is
 to create a folder called `controller` in the main source code
-folder (`guestbook`) (IntelliJ calls this a "package". In that
+folder (`guestbook`) (IntelliJ calls this a "package"). In that
 folder, create a new Java Class (right-click the folder, then `New`)
 called `GuestBookController`. IntelliJ will fill in some skeleton code, and
 not much more is needed to get a working controller.
@@ -197,7 +197,7 @@ are defined as so:
     @NotEmpty
     private String comment;
 
-The class itself, is annotated to show that it corresponds to an
+The class itself is annotated to show that it corresponds to an
 entity in the database:
 
     @Entity
@@ -252,7 +252,7 @@ store.
 To add the service layer, create a package called `service` alongside
 the existing `domain` and `controller` packages. In this new
 folder create a class called `GuestBookService` annotated with
-`@Service` that has a `GuestBookRepository` as its attribue, and
+`@Service` that has a `GuestBookRepository` as its attribute, and
 that includes a single method that calls the `findAll`
 method from `GuestBookRepository`.
 
@@ -270,12 +270,11 @@ method from `GuestBookRepository`.
 This new class includes the first example of *dependency injection*
 we have
 used. The `@Autowired` annotation declares that an instance of
-GuestBookRepository` is required by the service layer; this instance
+`GuestBookRepository` is required by the service layer; this instance
 will be created automatically when the app is started.
 
 If everything compiles and looks OK, the final stage is to make
 the controller call the service.
-
 
 ### Linking Controller and Service
 
@@ -303,7 +302,7 @@ is nothing yet in the database.
     $ curl localhost:8080
     []⏎
 
-To prove that the app is working, the last piece is to configure
+To prove that the app is working, the last piece of the jigsaw is to configure
 the database and then add some content. Happily, there is a quick
 way to do this for testing purposes.
 
@@ -405,8 +404,8 @@ A database app usually needs to implement four operations on its data
 store:
 
 * **C**reate new data.
-* **R**rerieve existing data.
-* **U**date existing data.
+* **R**etrieve existing data.
+* **U**pdate existing data.
 * **D**elete existing data.
 
 We will look at each of these in the following sections. These
@@ -432,7 +431,7 @@ process the resulting `List`. This would work, but it is a lot of
 effort and breaks a golden rule - whenever possible, let the
 database do the work.
 
-### Retreiving an Entry by ID
+### Retrieving an Entry by ID
 
 To retrieve a single entry by number, a URL such as
 `http://localhost:8080/comment/1` would be good, where `1` is the
@@ -580,7 +579,7 @@ the repository:
     }
 
 Like `delete`, `save` is already defined in the interface (and so the
-code needed to save the record will be genrated by Spring), so there
+code needed to save the record will be generatUped by Spring), so there
 is no new code needed in the repository. A `curl` POST request with
 a suitable JSON payload should now add a new item to the guestbook:
 
